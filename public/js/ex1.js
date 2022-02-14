@@ -23,7 +23,7 @@ export default async function exercise1() {
 
   // Get File
   let url =
-    "https://raw.githubusercontent.com/taybluetooth/f21dv-lab-2/main/public/csv/ex23.csv";
+    "https://raw.githubusercontent.com/taybluetooth/f21dv-lab-2/main/public/csv/ex1.csv";
     // Init data list
   let arr = [];
 
