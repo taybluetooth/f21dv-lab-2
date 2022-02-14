@@ -1,0 +1,70 @@
+<!--
+Author: Callum Taylor
+Filename: index.html
+License: MIT Open Source License
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <style>
+      svg text {
+        fill: white;
+        font: 10px sans-serif;
+        text-anchor: end;
+      }
+    </style>
+
+    <script type="module">
+      import * as ex from "./js/modules.js";
+
+      // Dynamically call function to reduce bloat
+      function callExercise(i) {
+        eval("ex." + "exercise" + i + "()");
+      }
+
+      // Create html elements
+      d3.select("body")
+        .append("h2")
+        .text("Select an exercise from the dropdown")
+        .style("font-family", "sans-serif")
+        .style("margin-left", "8px");
+
+      d3.select("body")
+        .append("span")
+        .text("d3.version:" + d3.version)
+        .style("font-family", "sans-serif")
+        .style("margin-left", "8px")
+        .style("display", "block");
+
+      var select = d3.select("body").append("select");
+
+      select
+        .selectAll("option")
+        .data(d3.range(1, 33))
+        .enter()
+        .append("option")
+        .attr("value", function (d) {
+          return d;
+        })
+        .text(function (d) {
+          return d;
+        });
+
+      select
+        .style("padding", "12px")
+        .style("display", "block")
+        .style("margin", "8px");
+
+      // If dropdown changed, call new exercise
+      select.on("change", function (d) {
+        var selectedOption = d3.select(this).property("value");
+        d3.select("body").selectAll("*:not(select):not(option):not(h2)").remove();
+        callExercise(selectedOption);
+      });
+    </script>
+  </body>
+</html>
