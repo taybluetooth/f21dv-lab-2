@@ -11,11 +11,40 @@ License: MIT Open Source License
   </head>
   <body>
     <style>
-      svg text {
-        fill: white;
-        font: 10px sans-serif;
-        text-anchor: end;
-      }
+      .pulse { 
+        border: 1px solid blue; 
+        fill: lightblue; 
+        stroke: purple; 
+        -webkit-transform: scale(1); 
+        -webkit-transform-origin: 50% 50%; 
+        transform: scale(1); 
+        transform-origin: 50% 50%; 
+      } 
+       
+      .pulse:hover 
+      { 
+        -webkit-animation-name: pulsar; 
+        -webkit-animation-duration: 0.2s; 
+        -webkit-animation-iteration-count: infinite; 
+        -webkit-animation-direction: alternate; 
+        animation-name: pulsar; 
+        animation-duration: 0.2s; 
+        animation-iteration-count: infinite; 
+        animation-direction: alternate; 
+        -webkit-transform-origin: 50% 50%; 
+        transform-origin: 50% 50%;  
+      } 
+       
+      @keyframes pulsar { 
+        from { 
+            fill: red; 
+        } 
+        to { 
+            fill: red; 
+            transform: scale(1.3,1.3); 
+            transform-origin: 50% 50%; 
+        } 
+      } 
     </style>
 
     <script type="module">
@@ -32,13 +61,6 @@ License: MIT Open Source License
         .text("Select an exercise from the dropdown")
         .style("font-family", "sans-serif")
         .style("margin-left", "8px");
-
-      d3.select("body")
-        .append("span")
-        .text("d3.version:" + d3.version)
-        .style("font-family", "sans-serif")
-        .style("margin-left", "8px")
-        .style("display", "block");
 
       var select = d3.select("body").append("select");
 
@@ -58,6 +80,8 @@ License: MIT Open Source License
         .style("padding", "12px")
         .style("display", "block")
         .style("margin", "8px");
+
+      callExercise(1);
 
       // If dropdown changed, call new exercise
       select.on("change", function (d) {
