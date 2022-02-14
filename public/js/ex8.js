@@ -6,34 +6,41 @@
 
 /**
  * Exercise 8
- * Uses span tags instead of paragraphs as specified in the example.
- * If it is a char, displays it as blue, if num, displays it as green.
- * 
+ * Changes div element only when mouse is over.
+ *
  * @export
  */
 
-export default function exercise8 () {
-  // Declare data
-  var myData = ["a", 4, 1, "b", 6, 2, 8, 9, "z"];
+// Animation helper function
+function animate() {
+  d3.select("div")
+    .style("background-color", "red")
+    .transition()
+    .duration(2000)
+    .style("background-color", "yellow")
+    .transition()
+    .duration(3000)
+    .style("background-color", "purple");
+}
 
-  // Create spans for each data entry
-  var p = d3
-    .select("body")
-    .selectAll("span")
-    .data(myData)
-    .enter()
-    .append("span")
-    .style("color", function (d, i) {
-      // JS has no char type
-      // Will check if string and length 1
-      // If char set blue, if num set green
-      if (typeof d == "string" && d.length == 1) {
-        return "blue";
-      } else if (typeof d == "number") {
-        return "green";
-      }
-    })
-    .text(function (d, i) {
-      return d;
-    });
-};
+export default function exercise8() {
+  // Change color over transition time.
+  d3.select("body")
+    .append("div")
+    .style("width", "100px")
+    .style("height", "100px")
+    .style("background-color", "red")
+    .on("mouseover", () => animate());
+
+  // Add button to repeat animation
+  d3.select("body")
+    .append("button")
+    .style("padding", "16px")
+    .style("margin-top", "8px")
+    .style("background-color", "white")
+    .style("color", "black")
+    .style("border", "1px solid black")
+    .style("border-radius", "8px")
+    .on("click", () => animate())
+    .text("Repeat");
+}

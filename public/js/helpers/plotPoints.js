@@ -45,41 +45,13 @@ export default function plotPoints(
   // Y Axis
   const y = d3.scaleLinear().domain([yExtent[0], yExtent[1]]).range([yMax, 0]);
 
-  // Add points
-  svg
-    .selectAll("dot")
-    .data(pos)
-    .enter()
-    .append("path")
-    .attr(
-      "d",
-      symbol.type(function (d) {
-        if (type == "triangle") {
-          return d3.symbolTriangle;
-        } else {
-          return d3.symbolCircle;
-        }
-      })
-    )
-    .attr("transform", function (d) {
-      return "translate(" + x(d.x) + "," + y(d.y) + ")";
-    })
-    .style("fill", color);
-
-  // Add labels
-  svg
-    .selectAll("dot")
-    .data(pos)
-    .enter()
-    .append("text")
-    .attr("transform", function (d) {
-      return "translate(" + (x(d.x) - 2) + "," + (y(d.y) - 5) + ")";
-    })
-    .text(function (d, i) {
-      return arr[i];
-    })
-    .attr("text-anchor", "middle")
-    .style("fill", "black")
-    .style("font-size", "10px")
-    .style("font-family", "sans-serif");
+  // Plot points
+  svg.selectAll("dot") 
+   .data(pos)  
+   .enter() 
+   .append("circle") 
+   .attr("cx", function (d) { return x(d.x) } ) 
+   .attr("cy", function (d) { return y(d.y) } ) 
+   .attr("r", 8) 
+   .attr("class", "pulse")
 }

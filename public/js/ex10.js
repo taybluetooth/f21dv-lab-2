@@ -4,30 +4,39 @@
  * License: MIT
  */
 
-// Import helper function
-import getHFAgeCount from "./helpers/getHFAgeCount.js";
-
 /**
  * Exercise 10
- * Uses above helper function to display the counts as paragraphs in the DOM.
+ * Circle changes size on mouse move with a transition.
  *
  * @export
  */
 
-export default async function exercise10() {
-  const ageCount = await getHFAgeCount();
+export default function exercise10() {
+  // Add svg element
+  d3.select("body")
+    .append("svg")
+    .attr("width", "200px")
+    .attr("height", "200px");
 
-  // Create HTML elements programatically
-  for (var i = 0; i < 4; i++) {
-    d3.select("body").append("p");
-  }
+  // Add circle element
+  d3.select("svg")
+    .append("circle")
+    .attr("cx", 50)
+    .attr("cy", 50)
+    .attr("r", 16)
+    .style("fill", "red")
+    .style("stroke", "black");
 
-  // Add data to paragraphs
-  var p = d3
-    .select("body")
-    .selectAll("p")
-    .data(ageCount)
-    .text(function (d, i) {
-      return d.label + ": " + d.count;
+  // Animate circle
+  d3.selectAll("circle")
+    .on("mouseover", function (event) {
+      d3.select(this).transition().duration(2000).attr("r", 40);
+    })
+    .on("mouseout", function () {
+      d3.select(this)
+        .transition()
+        .ease(d3.easeBounce)
+        .duration(2000)
+        .attr("r", 16);
     });
 }

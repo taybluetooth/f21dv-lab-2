@@ -6,95 +6,86 @@
 
 /**
  * Exercise 12
- * Builds an svg from an external file.
- * 
+ * Draws bars and applies seperate transitions.
+ *
  * @export
  */
 
-export default async function exercise12() {
-  // Init csv path
-  let svgcsv =
-    "https://raw.githubusercontent.com/taybluetooth/f21dv-lab-1/main/public/csv/ex12.csv";
-  
-  // Init list which holds objects from file
-  let arr = [];
-
-  // Fetch data from csv asynchronously
-  const csv = await d3.csv(svgcsv);
-
-  // Assign objects to array
-  csv.forEach((data) => {
-    arr.push({
-      shape: data.shape,
-      dim: data.dim,
-      position: data.position,
-      color: data.color,
-    });
-  });
-
-  // Print array
-  console.log(arr);
-
-  // Append svg element
+export default function exercise12() {
+  // Add svg
   var svg = d3
     .select("body")
     .append("svg")
-    .attr("width", 400)
-    .attr("height", 400)
-    .style("border", "1px solid green");
+    .attr("width", 300)
+    .attr("height", 300);
 
-  // Declare lists for dimensions and positions
-  let dim = [];
-  let pos = [];
+  // Add bars
+  var bar1 = svg
+    .append("rect")
+    .attr("fill", "blue")
+    .attr("x", 100)
+    .attr("y", 20)
+    .attr("height", 30)
+    .attr("width", 20);
 
-  // For each element in array parse object
-  // Each shape has different attrs so a switch case is used
-  arr.forEach((entry) => {
-    switch (entry.shape.toLowerCase()) {
-      case "circle":
-        dim = entry.dim.split(",");
-        svg
-          .append(entry.shape)
-          .attr("stroke", entry.color)
-          .attr("fill", entry.color)
-          .attr("cx", dim[0])
-          .attr("cy", dim[1])
-          .attr("r", entry.position);
-        break;
-      case "ellipse":
-        dim = entry.dim.split(",");
-        pos = entry.position.split(",");
-        svg
-          .append(entry.shape)
-          .attr("stroke", entry.color)
-          .attr("fill", entry.color)
-          .attr("cx", dim[0])
-          .attr("cy", dim[1])
-          .attr("rx", pos[0])
-          .attr("ry", pos[1]);
-        break;
-      case "line":
-        dim = entry.dim.split(",");
-        svg
-          .append(entry.shape)
-          .attr("stroke", entry.color)
-          .attr("x1", dim[0])
-          .attr("y1", dim[1])
-          .attr("x2", dim[2])
-          .attr("y2", dim[3]);
-        break;
-      case "rect":
-        dim = entry.dim.split(",");
-        pos = entry.position.split(",");
-        svg
-          .append(entry.shape)
-          .attr("stroke", entry.color)
-          .attr("fill", entry.color)
-          .attr("x", pos[0])
-          .attr("y", pos[1])
-          .attr("width", dim[1])
-          .attr("height", dim[0]);
-        break;
-    }
-  });
-};
+  var bar2 = svg
+    .append("rect")
+    .attr("fill", "green")
+    .attr("x", 130)
+    .attr("y", 20)
+    .attr("height", 30)
+    .attr("width", 20);
+
+  var bar3 = svg
+    .append("rect")
+    .attr("fill", "red")
+    .attr("x", 160)
+    .attr("y", 20)
+    .attr("height", 30)
+    .attr("width", 20);
+
+  update();
+
+  // Update method to apply transitions
+  function update() {
+    bar1
+      .transition()
+      .ease(d3.easeLinear)
+
+      .duration(2000)
+      .attr("height", 100);
+
+    bar2
+      .transition()
+      .ease(d3.easeLinear)
+      .duration(2000)
+      .delay(2000)
+      .attr("height", 125);
+
+    bar3
+      .transition()
+      .ease(d3.easeLinear)
+      .duration(2000)
+      .delay(4000)
+      .attr("height", 150);
+  }
+
+  // Reanimate helper function
+  function animate() {
+    d3.selectAll("rect").attr("height", 30);
+    update();
+  }
+
+  // Add button to repeat animation
+  d3.select("body")
+    .append("button")
+    .style("padding", "16px")
+    .style("margin-top", "10px")
+    .style("background-color", "white")
+    .style("color", "black")
+    .style("border", "1px solid black")
+    .style("border-radius", "8px")
+    .style("display", "block")
+    .on("click", () => animate())
+    .text("Repeat");
+}

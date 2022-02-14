@@ -6,50 +6,42 @@
 
 /**
  * Exercise 11
- * Draws an svg square shape.
- * 
+ * Adds a mouse over transition to text.
+ *
  * @export
  */
 
-export default function exercise11 () {
-  // Create SVG element
-  var svg = d3
-    .select("body")
+export default function exercise11() {
+  // Add svg element
+  d3.select("body")
     .append("svg")
-    .attr("width", 400)
-    .attr("height", 400)
-    .style("border", "1px solid green");
+    .attr("width", "200px")
+    .attr("height", "200px");
 
-  // Create line elements inside SVG to form square
-  svg
-    .append("line")
-    .attr("stroke", "blue")
-    .attr("x1", 100)
-    .attr("x2", 200)
-    .attr("y1", 100)
-    .attr("y2", 100);
+  // Add text element
+  d3.select("svg")
+    .append("text")
+    .attr("x", "50%")
+    .attr("y", "50%")
+    .attr("font-size", "16px")
+    .style("fill", "black")
+    .text("Bogies");
 
-  svg
-    .append("line")
-    .attr("stroke", "red")
-    .attr("x1", 200)
-    .attr("x2", 200)
-    .attr("y1", 100)
-    .attr("y2", 200);
-
-  svg
-    .append("line")
-    .attr("stroke", "purple")
-    .attr("x1", 200)
-    .attr("x2", 100)
-    .attr("y1", 200)
-    .attr("y2", 200);
-
-  svg
-    .append("line")
-    .attr("stroke", "green")
-    .attr("x1", 100)
-    .attr("x2", 100)
-    .attr("y1", 200)
-    .attr("y2", 100);
-};
+  // Animate text
+  d3.selectAll("text")
+    .on("mouseover", function (event) {
+      d3.select(this)
+        .transition()
+        .duration(1000)
+        .attr("font-size", "32px")
+        .style("fill", "lightgreen");
+    })
+    .on("mouseout", function () {
+      d3.select(this)
+        .transition()
+        .ease(d3.easeElastic)
+        .duration(2000)
+        .attr("font-size", "16px")
+        .style("fill", "black");
+    });
+}

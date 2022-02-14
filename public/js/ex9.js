@@ -6,61 +6,100 @@
 
 /**
  * Exercise 9
- * Counts how many names include Mr. or Mrs. etc.
- * Also prints out other column data.
- * 
+ * Creates 3 transition effects with different
+ * easing methods.
+ *
  * @export
  */
 
-export default async function exercise9()  {
-  // Init csv path
-  const titaniccsv =
-    "https://raw.githubusercontent.com/dsindy/kaggle-titanic/master/data/test.csv";
-  
-  // Init titles list
-  const titles = [
-    { title: "Mr.", num: 0 },
-    { title: "Master.", num: 0 },
-    { title: "Mrs.", num: 0 },
-    { title: "Miss.", num: 0 },
-  ];
+// Animation helper function
+function animate() {
+  // Add div element
+  d3.select(".div1")
+    .style("background-color", "blue")
+    .style("transform", "scale(1.0)")
+    .transition()
+    .ease(d3.easeBounce)
+    .duration(1000)
+    .style("background-color", "red")
+    .style("transform", "scale(0.5)");
+// Add div element
+  d3.select(".div2")
+    .style("background-color", "red")
+    .style("transform", "scale(1.0)")
+    .transition()
+    .ease(d3.easeCircleIn)
+    .duration(1000)
+    .style("background-color", "pink")
+    .style("transform", "scale(0.5)");
 
-  // Init genders list
-  const genders = [
-    { sex: "Male", num: 0 },
-    { sex: "Female", num: 0 },
-  ];
+    // Add div element
+  d3.select(".div3")
+    .style("background-color", "green")
+    .style("transform", "scale(1.0)")
+    .transition()
+    .ease(d3.easeElastic)
+    .duration(1000)
+    .style("background-color", "purple")
+    .style("transform", "scale(0.5)");
+}
 
-  // Fetch data asynchronously from csv
-  const data = await d3.csv(titaniccsv);
+export default function exercise9() {
 
-  // Count titles
-  data.forEach((entry) => {
-    titles.forEach((count) => {
-      if (entry.Name.includes(count.title)) {
-        count.num++;
-      }
-    });
-  });
+  // Add div element
+  d3.select("body")
+    .append("div")
+    .attr("class","div1")
+    .style("width", "100px")
+    .style("height", "100px")
+    .style("background-color", "blue")
+    .style("transform", "scale(1.0)")
+    .style("display", "inline-block")
+    .transition()
+    .ease(d3.easeBounce)
+    .duration(1000)
+    .style("background-color", "red")
+    .style("transform", "scale(0.5)");
+// Add div element
+  d3.select("body")
+    .append("div")
+    .attr("class","div2")
+    .style("width", "200px")
+    .style("height", "200px")
+    .style("background-color", "red")
+    .style("transform", "scale(1.0)")
+    .style("display", "inline-block")
+    .transition()
+    .ease(d3.easeCircleIn)
+    .duration(1000)
+    .style("background-color", "pink")
+    .style("transform", "scale(0.5)");
 
-  // Count genders
-  data.forEach((entry) => {
-    genders.forEach((count) => {
-      if (entry.Sex === count.sex.toLowerCase()) {
-        count.num++;
-      }
-    });
-  });
+    // Add div element
+  d3.select("body")
+    .append("div")
+    .attr("class", "div3")
+    .style("width", "300px")
+    .style("height", "300px")
+    .style("background-color", "green")
+    .style("transform", "scale(1.0)")
+    .style("display", "inline-block")
+    .transition()
+    .ease(d3.easeElastic)
+    .duration(1000)
+    .style("background-color", "purple")
+    .style("transform", "scale(0.5)");
 
-  // Print titles
-  titles.forEach((count) => {
-    d3.select("body").append("p").text(`${count.title}: ${count.num}`)
-    console.log(count.title + ": " + count.num);
-  });
-
-  // Print genders
-  genders.forEach((count) => {
-    d3.select("body").append("p").text(`${count.sex}: ${count.num}`)
-    console.log(count.sex + ": " + count.num);
-  });
-};
+  // Add button to repeat animation
+  d3.select("body")
+    .append("button")
+    .style("padding", "16px")
+    .style("margin-top", "40px")
+    .style("background-color", "white")
+    .style("color", "black")
+    .style("border", "1px solid black")
+    .style("border-radius", "8px")
+    .style("display", "block")
+    .on("click", () => animate())
+    .text("Repeat");
+}

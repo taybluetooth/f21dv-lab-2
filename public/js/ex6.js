@@ -6,36 +6,46 @@
 
 /**
  * Exercise 6
- * Additional to the example, adds an attribute called 'color' which is printed.
- * 
+ * Div element transitions from blue, to red, to green.
+ *
  * @export
  */
 
-export default function exercise6 () {
-  // Create HTML elements programatically
-  for (var i = 0; i < 3; i++) {
-    d3.select("body").append("div");
-  }
+// Animation helper function
+function animate() {
+  d3.select("div")
+    .style("background-color", "blue")
+    .transition()
+    .duration(1000)
+    .style("background-color", "red")
+    .transition()
+    .duration(3000)
+    .style("background-color", "green");
+}
 
-  // Define initial data
-  let otherdata = [
-    { name: "test", val: 1, color: "blue" },
-    { name: "other", val: 2, color: "red" },
-    { name: "b", val: 3, color: "green" },
-  ];
+export default function exercise6() {
+  // Change color over transition time.
+  d3.select("body")
+    .append("div")
+    .style("width", "100px")
+    .style("height", "100px")
+    .style("background-color", "blue")
+    .transition()
+    .duration(2000)
+    .style("background-color", "red")
+    .transition()
+    .duration(3000)
+    .style("background-color", "green");
 
-  // Print out data
-  let paragraph = d3
-    .select("body")
-    .selectAll("div")
-    .data(otherdata)
-    .text(function (d, i) {
-      console.log("d.name: " + d.name);
-      console.log("d.val:  " + d.val);
-      console.log("d.color " + d.color);
-      console.log("i: " + i);
-      console.log("this: " + this);
-
-      return "cont:" + d.name;
-    });
-};
+  // Add button to repeat animation
+  d3.select("body")
+    .append("button")
+    .style("padding", "16px")
+    .style("margin-top", "8px")
+    .style("background-color", "white")
+    .style("color", "black")
+    .style("border", "1px solid black")
+    .style("border-radius", "8px")
+    .on("click", () => animate())
+    .text("Repeat");
+}
