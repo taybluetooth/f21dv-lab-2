@@ -4,81 +4,98 @@
  * License: MIT
  */
 
-// Import helper function
-import getHFAgeCount from "./helpers/getHFAgeCount.js";
-
 /**
  * Exercise 15
- * Extends the bar chart to use more colour.
+ * Adds mouse events to graph example.
  *
  * @export
  */
 
 export default async function exercise15() {
-  // Init list with age counts
-  var arr = await getHFAgeCount();
+  var svg = d3.select("svg");
+  var margin = 200;
+  var width = svg.attr("width") - margin;
+  var height = svg.attr("height") - margin;
+  var path =
+    "https://github.com/taybluetooth/f21dv-lab-2/blob/master/public/csv/ex15.csv";
 
-  // Init data list
-  var data = [];
-
-  // Push entries to data list
-  arr.forEach((entry) => {
-    data.push(entry.count);
-  });
-
-  // Set graph attrs
-  var width = 1000;
-  var scaleFactor = 5;
-  var barHeight = 20;
-
-  // Create graph
-  var graph = d3
-    .select("body")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", barHeight * data.length);
-
-  // Create bars
-  var bar = graph
-    .selectAll("g")
-    .data(arr)
-    .enter()
-    .append("g")
-    .attr("transform", function (d, i) {
-      return "translate(0," + i * barHeight + ")";
-    })
-    .style("fill", function (d, i) {
-      if (d.label == "1-30") {
-        return "black";
-      }
-      if (d.label == "31-40") {
-        return "red";
-      }
-      if (d.label == "41-60") {
-        return "darkorange";
-      }
-      if (d.label == "61-100") {
-        return "blue";
-      }
-    });
-
-  // Create bars shapes
-  bar
-    .append("rect")
-    .attr("width", function (d) {
-      return d.count * scaleFactor;
-    })
-    .attr("height", barHeight - 1);
-
-  // Create labels
-  bar
+  svg
     .append("text")
-    .attr("x", function (d) {
-      return d.count * scaleFactor;
-    })
-    .attr("y", barHeight / 2)
-    .attr("dy", ".35em")
-    .text(function (d) {
-      return d.count;
-    });
+    .attr("transform", "translate(100,0)")
+    .attr("x", 50)
+    .attr("y", 50)
+    .attr("font-size", "24px")
+    .text("Stock Price");
+
+  var x = d3.scaleBand().range([0, width]).padding(0.4);
+  var y = d3.scaleLinear().range([height, 0]);
+
+  var g = svg
+    .append("g")
+    .attr("transform", "translate(" + 100 + "," + 100 + ")");
+
+  d3.csv(path).then(function (data) {
+    x.domain(
+      data.map(function (d) {
+        return d.year;
+      })
+    );
+
+    y.domain([
+      0,
+      d3.max(data, function (d) {
+        return d.value;
+      }),
+    ]);
+
+    g.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+      .append("text")
+      .attr("y", height - 250)
+      .attr("x", width - 100)
+      .attr("text-anchor", "end")
+      .attr("stroke", "black")
+      .text("Year");
+
+    g.append("g")
+      .call(
+        d3
+          .axisLeft(y)
+          .tickFormat(function (d) {
+            return "$" + d;
+          })
+          .ticks(10)
+      )
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "-5.1em")
+      .attr("text-anchor", "end")
+      .attr("stroke", "black")
+      .text("Stock Price");
+
+    g.selectAll(".bar")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      //    .on(..... ) – call mouse events here...
+      .attr("x", function (d) {
+        return x(d.year);
+      })
+      .attr("y", function (d) {
+        return y(d.value);
+      })
+      .attr("width", x.bandwidth())
+      .transition()
+      .ease(d3.easeLinear)
+      .duration(400)
+      .delay(function (d, i) {
+        return i * 50;
+      })
+      .attr("height", function (d) {
+        return height - y(d.value);
+      });
+  });
 }

@@ -6,124 +6,108 @@
 
 /**
  * Exercise 13
- * Extends the example to include the ‘enter’ and ‘exit’ concepts.
+ * After bars grow they shrink to original size.
  *
  * @export
  */
 
-export default async function exercise13() {
-  // Init csv path
-  let svgcsv =
-    "https://raw.githubusercontent.com/taybluetooth/f21dv-lab-1/main/public/csv/ex12.csv";
-
-  // Init lists which holds objects from file
-  let circles = [];
-  let lines = [];
-  let rects = [];
-
-  // Fetch data from csv asynchronously
-  const csv = await d3.csv(svgcsv);
-
-  // Assign objects to array
-  csv.forEach((data) => {
-    if (data.shape == "circle") {
-      circles.push({
-        dim: data.dim,
-        position: data.position,
-        color: data.color,
-      });
-    } else if (data.shape == "line") {
-      lines.push({
-        dim: data.dim,
-        position: data.position,
-        color: data.color,
-      });
-    } else if (data.shape == "rect") {
-      rects.push({
-        dim: data.dim,
-        position: data.position,
-        color: data.color,
-      });
-    }
-  });
-
-  // Append svg element
+export default function exercise13() {
+  // Add svg
   var svg = d3
     .select("body")
     .append("svg")
-    .attr("width", 400)
-    .attr("height", 400)
-    .style("border", "1px solid green");
+    .attr("width", 300)
+    .attr("height", 300);
 
-  // Dynamically add circle
-  svg
-    .selectAll("circle")
-    .data(circles)
-    .enter()
-    .append("circle")
-    .attr("stroke", function (d) {
-      return d.color;
-    })
-    .attr("fill", function (d) {
-      return d.color;
-    })
-    .attr("cx", function (d) {
-      return d.dim.split(",")[0];
-    })
-    .attr("cy", function (d) {
-      return d.dim.split(",")[1];
-    })
-    .attr("r", function (d) {
-      return d.position;
-    });
-
-  // Dynamically add line
-  svg
-    .selectAll("line")
-    .data(lines)
-    .enter()
-    .append("line")
-    .attr("stroke", function (d) {
-      return d.color;
-    })
-    .attr("x1", function (d) {
-      return d.dim.split(",")[0];
-    })
-    .attr("y1", function (d) {
-      return d.dim.split(",")[1];
-    })
-    .attr("x2", function (d) {
-      return d.dim.split(",")[2];
-    })
-    .attr("y2", function (d) {
-      return d.dim.split(",")[3];
-    });
-
-  // Dynamically add rect
-  svg
-    .selectAll("rect")
-    .data(rects)
-    .enter()
+  // Add bars
+  var bar1 = svg
     .append("rect")
-    .attr("stroke", function (d) {
-      return d.color;
-    })
-    .attr("fill", function (d) {
-      return d.color;
-    })
-    .attr("x", function (d) {
-      return d.position.split(",")[0];
-    })
-    .attr("y", function (d) {
-      return d.position.split(",")[1];
-    })
-    .attr("width", function (d) {
-      return d.dim.split(",")[0];
-    })
-    .attr("height", function (d) {
-      return d.dim.split(",")[1];
-    });
+    .attr("fill", "blue")
+    .attr("x", 100)
+    .attr("y", 20)
+    .attr("height", 30)
+    .attr("width", 20);
 
-  // Demonstrate exit concept
-  svg.selectAll("line").remove().exit();
+  var bar2 = svg
+    .append("rect")
+    .attr("fill", "green")
+    .attr("x", 130)
+    .attr("y", 20)
+    .attr("height", 30)
+    .attr("width", 20);
+
+  var bar3 = svg
+    .append("rect")
+    .attr("fill", "red")
+    .attr("x", 160)
+    .attr("y", 20)
+    .attr("height", 30)
+    .attr("width", 20);
+
+  grow();
+
+  // Update method to apply transitions
+  function grow() {
+    bar1.transition().ease(d3.easeLinear).duration(2000).attr("height", 100);
+
+    bar2
+      .transition()
+      .ease(d3.easeLinear)
+      .duration(2000)
+      .delay(2000)
+      .attr("height", 125);
+
+    bar3
+      .transition()
+      .ease(d3.easeLinear)
+      .duration(2000)
+      .delay(4000)
+      .attr("height", 150);
+
+    setTimeout(function () {
+      shrink();
+    }, 9000);
+  }
+
+  function shrink() {
+    bar3
+      .transition()
+      .ease(d3.easeLinear)
+      .duration(2000)
+      .delay(2000)
+      .attr("height", 30);
+
+    bar2
+      .transition()
+      .ease(d3.easeLinear)
+      .duration(2000)
+      .delay(4000)
+      .attr("height", 30);
+
+    bar1
+      .transition()
+      .ease(d3.easeLinear)
+      .duration(2000)
+      .delay(6000)
+      .attr("height", 30);
+  }
+
+  // Reanimate helper function
+  function animate() {
+    d3.selectAll("rect").attr("height", 30);
+    grow();
+  }
+
+  // Add button to repeat animation
+  d3.select("body")
+    .append("button")
+    .style("padding", "16px")
+    .style("margin-top", "10px")
+    .style("background-color", "white")
+    .style("color", "black")
+    .style("border", "1px solid black")
+    .style("border-radius", "8px")
+    .style("display", "block")
+    .on("click", () => animate())
+    .text("Repeat");
 }
