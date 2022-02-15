@@ -6,94 +6,146 @@
 
 /**
  * Exercise 16
- * Adds additional shapes to concept.
+ * Text appears above bars now.
  *
  * @export
  */
 
 export default function exercise16() {
-  // Init dimensions
-  const width = 500;
-  const height = 500;
+  d3.select("body").append("svg").attr("width", 500).attr("height", 500);
 
-  // Init data list
-  const data = [10, 15, 20, 25, 30];
-  // Declare colours
-  const colors = ["#ffffcc", "red", "rgb(0,255,0)", "#31a354", "#006837"];
+  var svg = d3.select("svg");
+  var margin = 200;
+  var width = svg.attr("width") - margin;
+  var height = svg.attr("height") - margin;
+  var path =
+    "https://raw.githubusercontent.com/taybluetooth/f21dv-lab-2/master/public/csv/ex15.csv";
 
-  // Create svg
-  const svg = d3
-    .select("body")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height);
+  svg
+    .append("text")
+    .attr("transform", "translate(100,0)")
+    .attr("x", 50)
+    .attr("y", 50)
+    .attr("font-size", "24px")
+    .text("Stock Price");
 
-  // Create grouping
-  const g = svg
-    .selectAll("g")
-    .data(data)
-    .enter()
+  var x = d3.scaleBand().range([0, width]).padding(0.4);
+  var y = d3.scaleLinear().range([height, 0]);
+
+  var g = svg
     .append("g")
-    .attr("transform", function (d, i) {
-      return "translate(0,0)";
-    });
+    .attr("transform", "translate(" + 100 + "," + 100 + ")");
 
-  // Create circle
-  g.append("circle")
-    .attr("cx", function (d, i) {
-      return i * 100 + 50;
-    })
-    .attr("cy", function (d, i) {
-      return 100;
-    })
-    .attr("r", function (d) {
-      return d * 1.5;
-    })
-    .attr("fill", function (d, i) {
-      return colors[i];
-    });
+  d3.csv(path).then(function (data) {
+    x.domain(
+      data.map(function (d) {
+        return d.year;
+      })
+    );
 
-  // Create rectangle
-  g.append("rect")
-    .attr("width", function (d, i) {
-      return d * 1 + 50;
-    })
-    .attr("height", function (d, i) {
-      return d * 1 + 50;
-    })
-    .attr("x", function (d, i) {
-      return i * 100;
-    })
-    .attr("y", function (d) {
-      return 300;
-    })
-    .attr("fill", function (d, i) {
-      return colors[i];
-    });
+    y.domain([
+      0,
+      d3.max(data, function (d) {
+        return d.value;
+      }),
+    ]);
 
-  // Create text
-  g.append("text")
-    .attr("x", function (d, i) {
-      return i * 100 + 40;
-    })
-    .attr("y", 105)
-    .attr("stroke", "teal")
-    .attr("font-size", "12px")
-    .attr("font-family", "sans-serif")
-    .text(function (d) {
-      return d;
-    });
+    g.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+      .append("text")
+      .attr("y", height - 250)
+      .attr("x", width - 100)
+      .attr("text-anchor", "end")
+      .attr("stroke", "black")
+      .text("Year");
 
-  // Create text
-  g.append("text")
-    .attr("x", function (d, i) {
-      return i * 100 + 40;
-    })
-    .attr("y", 350)
-    .attr("stroke", "teal")
-    .attr("font-size", "12px")
-    .attr("font-family", "sans-serif")
-    .text(function (d) {
-      return d;
-    });
+    g.append("g")
+      .call(
+        d3
+          .axisLeft(y)
+          .tickFormat(function (d) {
+            return "$" + d;
+          })
+          .ticks(10)
+      )
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "-5.1em")
+      .attr("text-anchor", "end")
+      .attr("stroke", "black")
+      .text("Stock Price");
+
+    g.selectAll(".bar")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      //    .on(..... ) – call mouse events here...
+      .attr("x", function (d) {
+        return x(d.year);
+      })
+      .attr("y", function (d) {
+        return y(d.value);
+      })
+      .attr("width", x.bandwidth())
+      .on("mouseover", onMouseOver)
+      .on("mouseout", onMouseOut)
+      .transition()
+      .ease(d3.easeLinear)
+      .duration(400)
+      .delay(function (d, i) {
+        return i * 50;
+      })
+      .attr("height", function (d) {
+        return height - y(d.value);
+      });
+  });
+
+  //mouseover event handler function
+  function onMouseOver(d, i) {
+    d3.select(this).attr("class", "highlight");
+    d3.select(this)
+
+      .transition() // adds animation
+      .duration(400)
+      .attr("width", x.bandwidth() + 5)
+      .attr("y", function (d) {
+        return y(d.value) - 10;
+      })
+      .attr("height", function (d) {
+        return height - y(d.value) + 10;
+      });
+
+    g.append("text")
+      .attr("class", "val")
+      .attr("x", function () {
+        return x(i.year);
+      })
+      .attr("y", function () {
+        return y(i.value) - 15;
+      })
+      .text(function (d) {
+        return "$" + i.value;
+      }); // Value of the text
+  }
+
+  //mouseout event handler function
+  function onMouseOut(d, i) {
+    // use the text label class to remove label on mouseout
+    d3.select(this).attr("class", "bar");
+    d3.select(this)
+      .transition() // adds animation
+      .duration(400)
+      .attr("width", x.bandwidth())
+      .attr("y", function (d) {
+        return y(i.value);
+      })
+      .attr("height", function (d) {
+        return height - y(i.value);
+      });
+
+    d3.selectAll(".val").remove();
+  }
 }
