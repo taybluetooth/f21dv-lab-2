@@ -12,12 +12,14 @@
  */
 
 export default async function exercise15() {
+  d3.select("body").append("svg").attr("width", 500).attr("height", 500);
+
   var svg = d3.select("svg");
   var margin = 200;
   var width = svg.attr("width") - margin;
   var height = svg.attr("height") - margin;
   var path =
-    "https://github.com/taybluetooth/f21dv-lab-2/blob/master/public/csv/ex15.csv";
+    "https://raw.githubusercontent.com/taybluetooth/f21dv-lab-2/master/public/csv/ex15.csv";
 
   svg
     .append("text")
@@ -95,6 +97,7 @@ export default async function exercise15() {
         return i * 50;
       })
       .attr("height", function (d) {
+        console.log(d.value)
         return height - y(d.value);
       });
   });

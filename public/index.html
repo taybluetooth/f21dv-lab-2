@@ -11,31 +11,38 @@ License: MIT Open Source License
   </head>
   <body>
     <style>
-      .pulse { 
-        border: 1px solid red; 
-        fill: orange; 
-        stroke: red; 
-        -webkit-transform: scale(1); 
-        -webkit-transform-origin: 50% 50%; 
-        transform: scale(1); 
-        transform-origin: 50% 50%; 
-      } 
-       
-      .pulse:hover 
-      { 
-        -webkit-animation-name: pulsar; 
-        -webkit-animation-duration: 0.2s; 
-        -webkit-animation-iteration-count: infinite; 
-        -webkit-animation-direction: alternate; 
-        animation-name: pulsar; 
-        animation-duration: 0.2s; 
-        animation-iteration-count: infinite; 
-        animation-direction: alternate; 
-        -webkit-transform-origin: 50% 50%; 
-        transform-origin: 50% 50%;  
-      } 
-       
-      @keyframes pulsar { 
+      .pulse {
+        border: 1px solid red;
+        fill: orange;
+        stroke: red;
+        -webkit-transform: scale(1);
+        -webkit-transform-origin: 50% 50%;
+        transform: scale(1);
+        transform-origin: 50% 50%;
+      }
+
+      .bar {
+        fill: steelblue;
+      }
+
+      .highlight {
+        fill: orange;
+      }
+
+      .pulse:hover {
+        -webkit-animation-name: pulsar;
+        -webkit-animation-duration: 0.2s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-direction: alternate;
+        animation-name: pulsar;
+        animation-duration: 0.2s;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+        -webkit-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+      }
+
+      @keyframes pulsar {
         from {
           stroke-width: 4px;
           stroke-opacity: 1;
@@ -46,7 +53,7 @@ License: MIT Open Source License
           stroke-opacity: 0;
           transform: scale(1);
         }
-      } 
+      }
     </style>
 
     <script type="module">
@@ -88,7 +95,9 @@ License: MIT Open Source License
       // If dropdown changed, call new exercise
       select.on("change", function (d) {
         var selectedOption = d3.select(this).property("value");
-        d3.select("body").selectAll("*:not(select):not(option):not(h2)").remove();
+        d3.select("body")
+          .selectAll("*:not(select):not(option):not(h2)")
+          .remove();
         callExercise(selectedOption);
       });
     </script>
