@@ -3,44 +3,78 @@
  * Filename: ex27.js
  * License: MIT
  */
-import drawWave from "./helpers/drawWave.js";
-import plotWave from "./helpers/plotWave.js";
-import plotPoints from "./helpers/plotPoints.js";
 
 /**
  * Exercise 27
- * Add ‘text’ to certain points on the line plot.
+ * Modifies the pie chart example.
  * @export
  */
 
 export default function exercise27() {
-  // Set Dimensions
-  const xSize = 600;
-  const ySize = 600;
-  const margin = 40;
-  const xMax = xSize - margin * 2;
-  const yMax = ySize - margin * 2;
-  // Get the 'limits' of the data - the full extent (mins and max)
-  // so the plotted data fits perfectly
+  var dataset = {
+    apples: [5345, 2879, 1997, 2437, 4045],
+  };
 
-  // Append SVG Object to the Page
-  const svg = d3
+  var dataset2 = {
+    apples: [2300, 1279, 1485, 2695, 2352],
+  };
+
+  d3.select("body")
+    .append("button")
+    .on("click", () => update(dataset))
+    .text("Graph 1");
+
+  d3.select("body")
+    .append("button")
+    .on("click", () => update(dataset2))
+    .text("Graph 2");
+
+  var width = 460,
+    height = 300,
+    radius = Math.min(width, height) / 2;
+
+  var color = d3.scaleOrdinal().range(d3.schemeSet3);
+
+  var pie = d3.pie().sort(null);
+
+  var arc = d3
+    .arc()
+    .innerRadius(radius - 100)
+    .outerRadius(radius - 50);
+
+  var svg = d3
     .select("body")
     .append("svg")
-    .attr("width", xSize)
-    .attr("height", ySize)
+    .attr("width", width)
+
+    .attr("height", height)
     .append("g")
-    .attr("transform", "translate(" + margin + "," + margin + ")");
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-  let arr = [10, 20, 40, 13, 23, 56, 90];
-  let arr2 = [90, 30, 40, 432, 100, 390, 30, 200, 1289];
+  function update(dataset) {
+    d3.selectAll("path").transition().duration(1000).remove();
 
-  // 1: Sine Wave
-  // 2: Cosine Wave
-  // 3: Tangent Wave
-  let pos = plotWave(arr, 1);
+    var updatePie = svg.selectAll("path").data(pie(dataset.apples));
 
-  drawWave(pos, svg, xMax, yMax, "gold");
+    var createPie = updatePie
+      .enter()
+      .append("path")
+      .attr("fill", function (d, i) {
+        return color(i);
+      })
+      .attr("d", arc)
+      .transition()
+      .duration(1000)
+      .attrTween("d", function (d) {
+        var i = d3.interpolate(d.endAngle, d.startAngle);
+        return function (t) {
+          d.startAngle = i(t);
+          return arc(d);
+        };
+      });
 
-  plotPoints(arr, pos, svg, xMax, yMax);
+    updatePie.transition().duration(1000).attr("d", arc);
+  }
+
+  update(dataset);
 }

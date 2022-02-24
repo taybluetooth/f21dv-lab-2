@@ -25,7 +25,7 @@ export default function exercise11() {
     .attr("y", "50%")
     .attr("font-size", "16px")
     .style("fill", "black")
-    .text("Bogies");
+    .text("Hello");
 
   // Animate text
   d3.selectAll("text")
@@ -34,7 +34,7 @@ export default function exercise11() {
         .transition()
         .duration(1000)
         .attr("font-size", "32px")
-        .style("fill", "lightgreen");
+        .style("fill", "lightblue");
     })
     .on("mouseout", function () {
       d3.select(this)

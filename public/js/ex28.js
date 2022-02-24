@@ -6,59 +6,54 @@
 
 /**
  * Exercise 28
- * Applys a d3 colour method to the bar chart.
+ * Modifies example colour.
  *
  * @export
  */
 
 export default function exercise28() {
-  // Init data list
-  var data = [5, 10, 12, 6];
+  var width = 400,
+    height = 400;
 
-  // Init graph dimensions
-  var width = 200;
-  var scaleFactor = 10;
-  var barHeight = 20;
+  // setup svg
+  d3.select("body").append("svg").attr("width", width).attr("height", height);
 
-  // Init colour method
-  var color = d3.scaleOrdinal().domain(data).range(d3.schemeSet3);
+  // generate some random data
+  var numNodes = 100;
+  var nodes = d3.range(numNodes).map(function (d) {
+    return { radius: Math.random() * 25 };
+  });
 
-  // Create graph
-  var graph = d3
-    .select("body")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", barHeight * data.length);
+  var simulation = d3
+    .forceSimulation(nodes)
+    .force("charge", d3.forceManyBody().strength(5))
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .force(
+      "collision",
+      d3.forceCollide().radius(function (d) {
+        return d.radius;
+      })
+    )
+    .on("tick", ticked);
 
-  // Create bars
-  var bar = graph
-    .selectAll("g")
-    .data(data)
-    .enter()
-    .append("g")
-    .attr("transform", function (d, i) {
-      return "translate(0," + i * barHeight + ")";
-    });
+  var colorScale = d3.scaleOrdinal().domain(nodes).range(d3.schemeSet3);
 
-  // Create bars shapes
-  bar
-    .append("rect")
-    .attr("width", function (d) {
-      return d * scaleFactor;
-    })
-    .attr("height", barHeight - 1)
-    .style("fill", color);
-
-  // Create labels
-  bar
-    .append("text")
-    .attr("x", function (d) {
-      return d * scaleFactor;
-    })
-    .attr("y", barHeight / 2)
-    .attr("dy", ".35em")
-    .text(function (d) {
-      return d;
-    })
-    .style("fill", "black");
+  function ticked() {
+    var u = d3
+      .select("svg")
+      .selectAll("circle")
+      .data(nodes)
+      .join("circle")
+      .attr("fill", colorScale)
+      .attr("r", function (d) {
+        return d.radius;
+      })
+      .attr("cx", function (d) {
+        return d.x;
+      })
+      .attr("cy", function (d) {
+        return d.y;
+      });
+  }
+  console.log("ready..");
 }

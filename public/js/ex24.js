@@ -4,59 +4,36 @@
  * License: MIT
  */
 
-import plotWave from "./helpers/plotWave.js";
-import drawWave from "./helpers/drawWave.js";
-
 /**
  * Exercise 24
- * Draws multiple lines on the same chart.
+ * Pie chart example
  *
  * @export
  */
 
 export default async function exercise24() {
-  // Set Dimensions
-  const xSize = 600;
-  const ySize = 600;
-  const margin = 40;
-  const xMax = xSize - margin * 2;
-  const yMax = ySize - margin * 2;
-  // Get the 'limits' of the data - the full extent (mins and max)
-  // so the plotted data fits perfectly
+  let intr = d3.interpolate([20, 40, 4], [1, 12, 10]);
 
-  // Append SVG Object to the Page
-  const svg = d3
-    .select("body")
-    .append("svg")
-    .attr("width", xSize)
-    .attr("height", ySize)
-    .append("g")
-    .attr("transform", "translate(" + margin + "," + margin + ")");
+  console.log("Type of returned function is: ", typeof intr);
 
-  // Get File
-  let url =
-    "https://raw.githubusercontent.com/taybluetooth/f21dv-lab-1/main/public/csv/ex23.csv";
+  console.log(intr(0.2));
 
-  // Declare separate data lists
-  let arr = [];
-  let arr2 = [];
+  d3.select("body")
+    .append("text")
+    .attr("width", 100)
+    .style("display", "block")
+    .style("margin-bottom", "16px")
+    .text(
+      "A function is returned as the type in the first statement as only the function's type is being printed and not its return type. "
+    )
+    .style("font-family", "sans-serif");
 
-  // Fetch data from csv asynchronously
-  const csv = await d3.csv(url);
-
-  // Add data to lists
-  csv.forEach((data) => {
-    arr.push(data.value);
-    arr2.push(data.value);
-  });
-
-  // 1: Sine Wave
-  // 2: Cosine Wave
-  // 3: Tangent Wave
-  arr = plotWave(arr, 3);
-  arr2 = plotWave(arr2, 2);
-
-  // Draw waves
-  drawWave(arr, svg, xMax, yMax, "gold");
-  drawWave(arr2, svg, xMax, yMax, "red");
+  d3.select("body")
+    .append("text")
+    .attr("width", 100)
+    .style("display", "block")
+    .text(
+      "In the second statement an array is returned containing the returning value of the called function, which interpolates two seperate arrays into one to a certain point as specified by the 0.2 or 20% of the way. "
+    )
+    .style("font-family", "sans-serif");
 }

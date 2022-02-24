@@ -4,48 +4,24 @@
  * License: MIT
  */
 
-// Import modules
-import drawWave from "./helpers/drawWave.js";
-import plotWave from "./helpers/plotWave.js";
-import plotPoints from "./helpers/plotPoints.js";
-
 /**
  * Exercise 26
- * Plots two lines on the same graph and marks data points as circles and triangles.
+ * Interpolate two dates.
  * @export
  */
 
-export default async function exercise26() {
-  // Set Dimensions
-  const xSize = 600;
-  const ySize = 600;
-  const margin = 40;
-  const xMax = xSize - margin * 2;
-  const yMax = ySize - margin * 2;
-  // Get the 'limits' of the data - the full extent (mins and max)
-  // so the plotted data fits perfectly
+export default function exercise26() {
+  let date = d3.interpolateDate(new Date("2021-12-02"), new Date("2022-02-17"))
+  console.log(date(0.5));
 
-  // Append SVG Object to the Page
-  const svg = d3
-    .select("body")
-    .append("svg")
-    .attr("width", xSize)
-    .attr("height", ySize)
-    .append("g")
-    .attr("transform", "translate(" + margin + "," + margin + ")");
-
-  let arr = [10, 20, 40, 13, 23, 56, 90];
-  let arr2 = [90, 30, 40, 432, 100, 390, 30, 200, 1289];
-
-  // 1: Sine Wave
-  // 2: Cosine Wave
-  // 3: Tangent Wave
-  let pos = plotWave(arr, 1);
-  let pos2 = plotWave(arr2, 2);
-
-  drawWave(pos, svg, xMax, yMax, "gold");
-  drawWave(pos2, svg, xMax, yMax, "red");
-
-  plotPoints(arr, pos, svg, xMax, yMax);
-  plotPoints(arr2, pos2, svg, xMax, yMax, "triangle", "blue");
+  d3.select("body")
+  .append("text")
+  .style("width", "700px")
+  .style("display", "block")
+  .style("margin-bottom", "16px")
+  .text(
+    `A new date can be acquired using the interpolateDate function d3 provides. This is used like so:   let date = d3.interpolateDate(new Date("2021-12-02"), new Date("2022-02-17")). Giving us the output of January 9th 2022.
+    `
+  )
+  .style("font-family", "sans-serif")
 }

@@ -4,93 +4,167 @@
  * License: MIT
  */
 
-import plotWave from "./helpers/plotWave.js";
-
 /**
  * Exercise 22
- * Modifies the code so it’s contained within a function (plotWave)
+ * Updates example so datasets can be different sizes.
  *
  * @export
  */
 
 export default function exercise22() {
-  // Set Dimensions
-  const xSize = 600;
-  const ySize = 600;
-  const margin = 40;
-  const xMax = xSize - margin * 2;
-  const yMax = ySize - margin * 2;
-  // Create Random Points
-  const numPoints = 100;
-  let data = [];
+  // create 2 data_set
+  const data1 = [
+    { group: "A", value: 5 },
+    { group: "B", value: 20 },
+    { group: "C", value: 9 },
+  ];
 
-  // 1: Sine Wave
-  // 2: Cosine Wave
-  // 3: Tangent Wave
-  data = plotWave(data, 1);
+  const data2 = [
+    { group: "A", value: 10 },
+    { group: "B", value: 2 },
+    { group: "C", value: 22 },
+    { group: "D", value: 14 },
+  ];
 
-  // Get the 'limits' of the data - the full extent (mins and max)
-  // so the plotted data fits perfectly
-  const xExtent = d3.extent(data, (d) => {
-    return d.x;
-  });
-  const yExtent = d3.extent(data, (d) => {
-    return d.y;
-  });
+  const data3 = [
+    { group: "A", value: 15 },
+    { group: "B", value: 7 },
+    { group: "C", value: 2 },
+    { group: "D", value: 5 },
+    { group: "E", value: 9 },
+  ];
 
-  // Append SVG Object to the Page
-  const svg = d3
+  d3.select("body")
+    .append("button")
+    .on("click", () => update(data1))
+    .text("Graph 1");
+
+  d3.select("body")
+    .append("button")
+    .on("click", () => update(data2))
+    .text("Graph 2");
+
+  d3.select("body")
+    .append("button")
+    .on("click", () => update(data3))
+    .text("Graph 3");
+
+  // set the dimensions and margins of the graph
+  const margin = { top: 100, right: 30, bottom: 70, left: 60 };
+  const width = 460 - margin.left - margin.right;
+  const height = 400 - margin.top - margin.bottom;
+
+  // append the svg object to the body of the page
+  var svg = d3
     .select("body")
+    .append("div")
     .append("svg")
-    .attr("width", xSize)
-    .attr("height", ySize)
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
     .append("g")
-    .attr("transform", "translate(" + margin + "," + margin + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // X Axis
-  const x = d3.scaleLinear().domain([xExtent[0], xExtent[1]]).range([0, xMax]);
+  // X axis
+  var x = d3
+    .scaleBand()
+    .range([0, width])
+    .domain(
+      data1.map(function (d) {
+        return d.group;
+      })
+    )
+    .padding(0.2);
 
-  // bottom
-  svg
+  var xAxis = svg
     .append("g")
-    .attr("transform", "translate(0," + yMax + ")")
-    .call(d3.axisBottom(x))
-    .attr("color", "green"); // make bottom axis green
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
 
-  // top
-  svg.append("g").call(d3.axisTop(x));
+  // Add Y axis
+  var y = d3.scaleLinear().domain([0, 20]).range([height, 0]);
+  var yAxis = svg.append("g").attr("class", "myYaxis").call(d3.axisLeft(y));
 
-  // Y Axis
-  const y = d3.scaleLinear().domain([yExtent[0], yExtent[1]]).range([yMax, 0]);
+  //mouseover event handler function
+  function onMouseOver(d, i) {
+    d3.select(this).attr("class", "highlight");
+    d3.select(this)
 
-  // left y axis
-  svg.append("g").call(d3.axisLeft(y));
+      .transition() // adds animation
+      .duration(400)
+      .attr("y", function (d) {
+        return y(d.value) - 10;
+      })
+      .attr("height", function (d) {
+        return height - y(d.value) + 10;
+      });
 
-  // right y axis
-  svg
-    .append("g")
-    .attr("transform", `translate(${yMax},0)`)
-    .call(d3.axisRight(y));
+    svg
+      .append("text")
+      .attr("class", "val")
+      .attr("x", function () {
+        return x(i.group);
+      })
+      .attr("y", function () {
+        return y(i.value) - 15;
+      })
+      .text(function (d) {
+        return i.value;
+      }); // Value of the text
+  }
 
-  // Add the line
-  svg
-    .append("path")
-    .datum(data)
-    .attr("fill", "none")
-    .attr("stroke", "steelblue")
-    .attr("stroke-width", 1.5)
-    .attr(
-      "d",
-      d3
-        .line()
-        .x(function (d) {
-          return x(d.x);
-        })
-        .y(function (d) {
-          return y(d.y);
-        })
-    );
+  //mouseout event handler function
+  function onMouseOut(d, i) {
+    // use the text label class to remove label on mouseout
+    d3.select(this).attr("class", "bar");
+    d3.select(this)
+      .transition() // adds animation
+      .duration(400)
+      .attr("width", x.bandwidth())
+      .attr("y", function (d) {
+        return y(i.value);
+      })
+      .attr("height", function (d) {
+        return height - y(i.value);
+      });
 
-    // Set axes text to be black
-    svg.selectAll("svg text").style("fill", "black");
+    d3.selectAll(".val").remove();
+  }
+
+  // A function that create / update the plot for a given Graph:
+  function update(data) {
+
+    svg.selectAll("rect").remove();
+
+    var u = svg.selectAll("rect").data(data);
+
+    x.domain(data.map(function (d) {
+      return d.group;
+    }))
+    xAxis.transition().duration(1000).call(d3.axisBottom(x))
+
+    u.enter()
+      .append("rect")
+      .on("mouseover", onMouseOver)
+      .on("mouseout", onMouseOut)
+      .merge(u)
+      .transition()
+      .duration(1000)
+      .attr("x", function (d) {
+        return x(d.group);
+      })
+      .attr("y", function (d) {
+        return y(d.value);
+      })
+      .attr("width", x.bandwidth())
+      .attr("height", function (d) {
+        return height - y(d.value);
+      })
+      .attr("fill", function (d) {
+        // Create color scale
+        return "#" + Math.floor(Math.random() * 16777215).toString(16);
+      });
+  }
+
+  // Initialize the plot with the first dataset
+  update(data1);
 }

@@ -4,105 +4,117 @@
  * License: MIT
  */
 
-import plotWave from "./helpers/plotWave.js";
-
 /**
  * Exercise 23
- * Loads in some test data from a csv and plots the line
+ * Updates bar chart example to use a line chart instead.
  *
  * @export
  */
 
-export default async function exercise23() {
-  // Set Dimensions
-  const xSize = 600;
-  const ySize = 600;
-  const margin = 40;
-  const xMax = xSize - margin * 2;
-  const yMax = ySize - margin * 2;
+export default function exercise23() {
+  // create 2 data_set
+  const data1 = [
+    { group: "A", value: 5 },
+    { group: "B", value: 20 },
+    { group: "C", value: 9 },
+  ];
 
-  // Get File
-  let url =
-    "https://raw.githubusercontent.com/taybluetooth/f21dv-lab-1/main/public/csv/ex23.csv";
-    // Init data list
-  let arr = [];
+  const data2 = [
+    { group: "A", value: 10 },
+    { group: "B", value: 2 },
+    { group: "C", value: 22 },
+    { group: "D", value: 14 },
+  ];
 
-  // Fetch data from csv asynchronously
-  const csv = await d3.csv(url);
+  const data3 = [
+    { group: "A", value: 15 },
+    { group: "B", value: 7 },
+    { group: "C", value: 2 },
+    { group: "D", value: 5 },
+    { group: "E", value: 9 },
+  ];
 
-  // Add entries to data list
-  csv.forEach((data) => {
-    arr.push(data.value);
-  });
+  d3.select("body")
+    .append("button")
+    .on("click", () => update(data1))
+    .text("Graph 1");
 
-  // 1: Sine Wave
-  // 2: Cosine Wave
-  // 3: Tangent Wave
-  // Calls plot wave helper function
-  arr = plotWave(arr, 2);
+  d3.select("body")
+    .append("button")
+    .on("click", () => update(data2))
+    .text("Graph 2");
 
-  // Get the 'limits' of the data - the full extent (mins and max)
-  // so the plotted data fits perfectly
-  const xExtent = d3.extent(arr, (d) => {
-    return d.x;
-  });
-  const yExtent = d3.extent(arr, (d) => {
-    return d.y;
-  });
+  d3.select("body")
+    .append("button")
+    .on("click", () => update(data3))
+    .text("Graph 3");
 
-  // Append SVG object to the page
-  const svg = d3
+  // set the dimensions and margins of the graph
+  const margin = { top: 100, right: 30, bottom: 70, left: 60 };
+  const width = 460 - margin.left - margin.right;
+  const height = 400 - margin.top - margin.bottom;
+
+  // append the svg object to the body of the page
+  var svg = d3
     .select("body")
+    .append("div")
     .append("svg")
-    .attr("width", xSize)
-    .attr("height", ySize)
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
     .append("g")
-    .attr("transform", "translate(" + margin + "," + margin + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // Add x axis
-  const x = d3.scaleLinear().domain([xExtent[0], xExtent[1]]).range([0, xMax]);
+  // X axis
+  var x = d3
+    .scaleBand()
+    .range([0, width])
+    .domain(
+      data1.map(function (d) {
+        return d.group;
+      })
+    )
+    .padding(0.2);
 
-  // Add bottom axis
-  svg
+  var xAxis = svg
     .append("g")
-    .attr("transform", "translate(0," + yMax + ")")
-    .call(d3.axisBottom(x))
-    .attr("color", "green"); // make bottom axis green
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
 
-  // Add top axis
-  svg.append("g").call(d3.axisTop(x));
+  // Add Y axis
+  var y = d3.scaleLinear().domain([0, 20]).range([height, 0]);
+  var yAxis = svg.append("g").attr("class", "myYaxis").call(d3.axisLeft(y));
 
-  // Add y axis
-  const y = d3.scaleLinear().domain([yExtent[0], yExtent[1]]).range([yMax, 0]);
+  // A function that create / update the plot for a given Graph:
+  function update(data) {
+    // Remove any existing lines
+    svg.selectAll(".line").remove();
 
-  // Add left axis
-  svg.append("g").call(d3.axisLeft(y));
+    // Add the line
+    svg
+      .append("path")
+      .attr("class", "line")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr(
+        "d",
+        d3
+          .line()
+          .x(function (d) {
+            return x(d.group);
+          })
+          .y(function (d) {
+            return y(d.value);
+          })
+      )
+      .attr("stroke-dasharray", "385 385")
+      .attr("stroke-dashoffset", 385)
+      .transition()
+      .duration(2000)
+      .attr("stroke-dashoffset", 0);
+  }
 
-  // Add right axis
-  svg
-    .append("g")
-    .attr("transform", `translate(${yMax},0)`)
-    .call(d3.axisRight(y));
-
-  // Add the line
-  svg
-    .append("path")
-    .datum(arr)
-    .attr("fill", "none")
-    .attr("stroke", "steelblue")
-    .attr("stroke-width", 1.5)
-    .attr(
-      "d",
-      d3
-        .line()
-        .x(function (d) {
-          return x(d.x);
-        })
-        .y(function (d) {
-          return y(d.y);
-        })
-    );
-
-    // Set axes text to be black
-    svg.selectAll("svg text").style("fill", "black");
+  // Initialize the plot with the first dataset
+  update(data1);
 }

@@ -12,50 +12,63 @@
  */
 
 export default function exercise30() {
-  // Init extended data list
-  var data = [3, 4, 8, 12, 49, 10, 20, 39, 19, 11, 3, 7, 2, 19, 29];
+  var width = 400,
+    height = 400;
 
-  // Create pie dimenisons
-  const xSize = 400;
-  const ySize = 400;
-  const margin = 40;
-  const xMax = xSize - margin * 2;
-  const yMax = ySize - margin * 2;
+  // setup svg
+  d3.select("body").append("svg").attr("width", width).attr("height", height);
 
-  // Append SVG Object to the Page
-  const svg = d3
-    .select("body")
-    .append("svg")
-    .attr("width", xSize)
-    .attr("height", ySize)
-    .append("g")
-    .attr("transform", "translate(" + xSize / 2 + "," + ySize / 2 + ")");
+  // generate some random data
+  var nodes = [
+    { radius: 4 },
+    { radius: 11 },
+    { radius: 21 },
+    { radius: 24 },
+    { radius: 28 },
+    { radius: 29 },
+    { radius: 34 },
+    { radius: 39 },
+    { radius: 47 },
+    { radius: 52 },
+    { radius: 56 },
+  ];
 
-  // Calculate radius
-  const radius = Math.min(xSize, ySize) / 2;
+  var simulation = d3
+    .forceSimulation(nodes)
+    .force("charge", d3.forceManyBody().strength(5))
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .force(
+      "collision",
+      d3.forceCollide().radius(function (d) {
+        return d.radius;
+      })
+    )
+    .on("tick", ticked);
 
-  // Init colours
-  var color = d3.scaleOrdinal().domain(data).range(d3.schemeSet3);
+  var colorScale = d3.scaleOrdinal().domain(nodes).range(d3.schemeSet3);
 
-  // Generate the pie
-  var pie = d3.pie();
-
-  // Generate the arcs
-  var arc = d3.arc().innerRadius(0).outerRadius(radius);
-
-  // Generate groups
-  var arcs = svg
-    .selectAll("arc")
-    .data(pie(data))
-    .enter()
-    .append("g")
-    .attr("class", "arc");
-
-  // Draw arc paths
-  arcs
-    .append("path")
-    .attr("fill", function (d, i) {
-      return color(i);
-    })
-    .attr("d", arc);
+  function ticked() {
+    var u = d3
+      .select("svg")
+      .selectAll("circle")
+      .data(nodes)
+      .join("circle")
+      .attr("fill", colorScale)
+      .attr("r", function (d) {
+        return d.radius;
+      })
+      .attr("cx", function (d) {
+        return d.x;
+      })
+      .attr("cy", function (d) {
+        return d.y;
+      })
+      .on("mouseover", function(d, i) {
+        d3.select("svg").append("text").attr("class", "circletext").attr("x", i.x).attr("y", i.y).text(i.radius)
+      })
+      .on("mouseout", function(d, i) {
+        d3.select(".circletext").remove();
+      })
+  }
+  console.log("ready..");
 }

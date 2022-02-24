@@ -12,53 +12,58 @@
  */
 
 export default function exercise32() {
-  // Init data list
-  var data = [5, 10, 12, 6];
+  var width = 400,
+    height = 400;
 
-  // Init graph dimensions
-  var width = 200;
-  var scaleFactor = 10;
-  var barHeight = 20;
+  // setup svg
+  d3.select("body").append("svg").attr("width", width).attr("height", height);
 
-  // Create graph
-  var graph = d3
-    .select("body")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", barHeight * data.length);
+  // generate some random data
+  var nodes = [
+    { radius: 4 },
+    { radius: 11 },
+    { radius: 21 },
+    { radius: 24 },
+    { radius: 28 },
+    { radius: 29 },
+    { radius: 34 },
+    { radius: 39 },
+    { radius: 47 },
+    { radius: 52 },
+    { radius: 56 },
+  ];
 
-  // Create bars
-  var bar = graph
-    .selectAll("g")
-    .data(data)
-    .enter()
-    .append("g")
-    .attr("transform", function (d, i) {
-      return "translate(0," + i * barHeight + ")";
-    });
+  var simulation = d3
+    .forceSimulation(nodes)
+    .force("radial", d3.forceRadial(20, width / 2, height / 2))
+  .force("collide", d3.forceCollide().radius(50)
+    )
+    .on("tick", ticked);
 
-  // Create bars shapes
-  bar
-    .append("rect")
-    .attr("width", function (d) {
-      return d * scaleFactor;
-    })
-    .attr("height", barHeight - 1);
+  var colorScale = d3.scaleOrdinal().domain(nodes).range(d3.schemeSet3);
 
-  // Create labels
-  bar
-    .append("text")
-    .attr("x", function (d) {
-      return d * scaleFactor;
-    })
-    .attr("y", barHeight / 2)
-    .attr("dy", ".35em")
-    .text(function (d) {
-      return d;
-    });
-
-  // Add image to background attribute of graph
-  graph
-    .style("background", "url(img/sun.svg) no-repeat")
-    .style("background-position", "center");
+  function ticked() {
+    var u = d3
+      .select("svg")
+      .selectAll("circle")
+      .data(nodes)
+      .join("circle")
+      .attr("fill", colorScale)
+      .attr("r", function (d) {
+        return d.radius;
+      })
+      .attr("cx", function (d) {
+        return d.x;
+      })
+      .attr("cy", function (d) {
+        return d.y;
+      })
+      .on("mouseover", function (d) {
+        simulation.force("collide", d3.forceCollide().radius(100))
+      })
+      .on("mouseout", function (d) {
+        simulation.force("collide", d3.forceCollide().radius(50))
+      })
+  }
+  console.log("ready..");
 }

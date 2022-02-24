@@ -5,7 +5,7 @@
 ### Lab 2 for F21DV Data Visualisation.
 
 ### Heroku: 
-    - https://f21dv-lab-1.herokuapp.com/
+    - https://f21dv-lab-2.herokuapp.com/
 
 ### Instructions to Run:
     - Navigate to the source code directory.
