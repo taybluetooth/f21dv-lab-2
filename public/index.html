@@ -95,10 +95,15 @@ License: MIT Open Source License
       // If dropdown changed, call new exercise
       select.on("change", function (d) {
         var selectedOption = d3.select(this).property("value");
-        d3.select("body")
+        if(selectedOption != 1) {
+          d3.select("body")
           .selectAll("*:not(select):not(option):not(h2)")
           .remove();
-        callExercise(selectedOption);
+          callExercise(selectedOption);
+        }
+        else {
+          window.location.reload();
+        }
       });
     </script>
   </body>
